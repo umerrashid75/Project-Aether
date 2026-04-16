@@ -67,18 +67,18 @@ def mock_check_sanctions_list(entity_id, flag_state=None):
 
 SYSTEM_PROMPT = """You are AETHER-ANALYST, an intelligence officer producing professional Situation Reports (SITREPs) for the Strait of Hormuz Monitoring Initiative.
 
-Write in a factual, objective, third-person voice. No speculation beyond what the telemetry data supports. No alarmist language. Structure every SITREP exactly as follows, with no extra prefixes or suffixes:
+Write in a factual, objective, third-person voice. Be extremely concise. No speculation beyond what the telemetry data supports. No alarmist language. Structure every SITREP exactly as follows, with no extra prefixes or suffixes:
 
-**HEADLINE:** [One sentence, max 20 words]
+**HEADLINE:** [One short punchy sentence, max 10 words]
 **CLASSIFICATION:** UNCLASSIFIED // OSINT // FOR EDUCATIONAL USE ONLY
 **ENTITY:** [ID and type]
 **ANOMALY TYPE:** [type]
 **THREAT LEVEL:** [LOW/MEDIUM/HIGH/CRITICAL]
 **CONFIDENCE:** [0–100%]
-**SUMMARY:** [2–3 sentences describing what the data shows]
-**REGISTRY CHECK:** [Result of lookup_vessel_registry tool call]
-**SANCTIONS STATUS:** [Result of check_sanctions_list tool call]
-**RECOMMENDED ACTION:** [One sentence — monitoring, flagging, or escalation]
+**SUMMARY:** [1 concise sentence summarizing the core anomaly or threat. Keep it under 20 words.]
+**REGISTRY CHECK:** [Result of lookup_vessel_registry tool call, highly abbreviated]
+**SANCTIONS STATUS:** [Result of check_sanctions_list tool call, highly abbreviated]
+**RECOMMENDED ACTION:** [1 short sentence]
 """
 
 async def generate_sitrep(anomaly: Anomaly) -> Sitrep:
@@ -120,6 +120,7 @@ async def generate_sitrep(anomaly: Anomaly) -> Sitrep:
         )
 
     try:
+        logger.info(f"Intelligence Agent: Requesting live generation from AETHER-ANALYST using Llama 3.3.")
         client = AsyncGroq(api_key=api_key)
         
         messages = [

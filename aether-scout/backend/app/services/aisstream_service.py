@@ -6,6 +6,8 @@ import json
 import os
 import logging
 import websockets
+import ssl
+import certifi
 from datetime import datetime, timezone
 import pymongo
 
@@ -95,11 +97,19 @@ async def stream_vessels():
             "BoundingBoxes": [[[25.0, 54.0], [28.0, 59.0]]],
             "FilterMessageTypes": ["PositionReport"]
         }
+        
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
 
         while True:
             try:
-                async with websockets.connect("wss://stream.aisstream.io/v0/stream") as ws:
-                    logger.info("Connected to AISStream WebSocket.")
+                # Add ping_interval to keep the connection alive over long periods
+                async with websockets.connect(
+                    "wss://stream.aisstream.io/v0/stream", 
+                    ssl=ssl_context,
+                    ping_interval=20,
+                    ping_timeout=20
+                ) as ws:
+                    logger.info("Connected to AISStream WebSocket (Live).")
                     await ws.send(json.dumps(subscribe_message))
                     delay_index = 0 # reset on successful connection
                     

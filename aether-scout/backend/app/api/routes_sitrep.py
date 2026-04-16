@@ -32,6 +32,27 @@ class TokenBucket:
             return True
         return False
 
+@router.get("/api/sitrep/diagnostic/groq")
+async def diagnostic_groq_healthcheck():
+    import os
+    from groq import AsyncGroq
+    api_key = os.getenv("GROQ_API_KEY", "")
+    
+    if not api_key:
+        return {"status": "error", "message": "GROQ_API_KEY not found in environment variables."}
+        
+    try:
+        client = AsyncGroq(api_key=api_key)
+        response = await client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": "Respond with exactly the word 'OPERATIONAL'."}],
+            max_tokens=10
+        )
+        msg = response.choices[0].message.content.strip()
+        return {"status": "success", "message": "Groq API connected successfully to AETHER-ANALYST.", "model_response": msg}
+    except Exception as e:
+        return {"status": "error", "message": f"Groq API connection failed: {e}"}
+
 bucket = TokenBucket()
 
 # In-memory anomaly store for DEMO_MODE (no DB required)
