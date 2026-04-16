@@ -1,0 +1,41 @@
+# --- Project Aether Monorepo .gitignore ---
+
+# --- Backend (inside aether-scout) ---
+**/__pycache__/
+**/*.py[cod]
+**/*.venv
+**/venv
+**/.env
+**/.env.local
+aether-scout/backend/.venv
+aether-scout/backend/.env
+
+# --- Frontend (inside aether-scout) ---
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+aether-scout/frontend/node_modules/
+aether-scout/frontend/.next/
+aether-scout/frontend/.env*
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- AI Assets ---
+*.pt
+*.weights
+
+# --- Local Databases / Logs ---
+*.sqlite3
+*.log
+temp/
+scratch/
