@@ -31,12 +31,35 @@ def detect_gnss_spoof_aircraft(state: AircraftState, prev: AircraftState) -> Ano
         return None
         
     dist_km = haversine(prev.position[0], prev.position[1], state.position[0], state.position[1])
-    over_land = is_over_land(state.position[0], state.position[1])
     
     # 50km jump between 30s polls with no velocity justification
     max_possible_dist = (state.velocity_ms or 300) * 30 / 1000.0 * 2
     
     if dist_km > 50 and dist_km > max_possible_dist:
+        lon = state.position[0]
+        lat = state.position[1]
+
+        # Dover Strait approx limits
+        if lat > 51.15: # UK coast approx
+            return Anomaly(
+                entity_id=state.icao24,
+                entity_type="aircraft",
+                anomaly_type="low_flight",
+                threat_level="HIGH",
+                threat_score=0.85,
+                details={"altitude": state.altitude_m, "reason": "Low flight over sovereign UK territory detected"}
+            )
+        if lat < 50.95: # France Coast approx
+            return Anomaly(
+                entity_id=state.icao24,
+                entity_type="aircraft",
+                anomaly_type="low_flight",
+                threat_level="MEDIUM",
+                position=list(state.position),
+                threat_score=0.75,
+                details={"reason": "Low-altitude position spoofed over restricted landmass"}
+            )
+        
         score = min(0.7 + (dist_km / 500) * 0.2, 0.9)
         return Anomaly(
             anomaly_type="gnss_spoof",
@@ -46,17 +69,6 @@ def detect_gnss_spoof_aircraft(state: AircraftState, prev: AircraftState) -> Ano
             threat_score=score,
             threat_level=calculate_threat_score(score),
             details={"distance_jumped_km": round(dist_km, 2), "reason": "Impossible positional leap"}
-        )
-        
-    if over_land and state.altitude_m and state.altitude_m < 5000:
-        return Anomaly(
-            anomaly_type="gnss_spoof",
-            entity_id=state.icao24,
-            entity_type="aircraft",
-            position=list(state.position),
-            threat_score=0.75,
-            threat_level=calculate_threat_score(0.75),
-            details={"reason": "Low-altitude position spoofed over restricted landmass"}
         )
         
     return None

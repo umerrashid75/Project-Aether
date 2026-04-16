@@ -26,7 +26,7 @@ export default function Dashboard() {
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-wide">PROJECT AETHER</h1>
-            <p className="text-xs text-slate-400 uppercase tracking-widest">Hormuz Intelligence Scout</p>
+            <p className="text-xs text-slate-400 uppercase tracking-widest">Dover Intelligence Scout</p>
           </div>
         </div>
         <div className="text-[10px] text-slate-500 font-mono flex flex-col items-end opacity-60">

@@ -15,18 +15,12 @@ def get_aircraft() -> List[dict]:
     """
     now = int(datetime.utcnow().timestamp())
     
-    # Base aircraft profiles
+    # Mock OpenSky data for English Channel
     profiles = [
-        {"icao24": "8960e6", "callsign": "UAE77   ", "country": "United Arab Emirates", "squawk": "2311"},
-        {"icao24": "06a213", "callsign": "QTR11   ", "country": "Qatar", "squawk": "1455"},
-        {"icao24": "73809e", "callsign": "IRB234  ", "country": "Iran", "squawk": "3341"},
-        {"icao24": "400a20", "callsign": "BAW104  ", "country": "United Kingdom", "squawk": "5122"},
-        {"icao24": "3c66a8", "callsign": "DLH624  ", "country": "Germany", "squawk": "1143"},
-        {"icao24": "7100b2", "callsign": "SVA122  ", "country": "Saudi Arabia", "squawk": "0421"},
-        {"icao24": "0d07cc", "callsign": "OMA14   ", "country": "Oman", "squawk": "2214"},
-        {"icao24": "aa1c96", "callsign": "AAL10   ", "country": "United States", "squawk": "1122"},
-        {"icao24": "4ca83c", "callsign": "RYR802  ", "country": "Ireland", "squawk": "1000"},
-        {"icao24": "880521", "callsign": "ETH721  ", "country": "Ethiopia", "squawk": "5500"},
+        {"icao24": "8960e6", "callsign": "BAW77   ", "country": "United Kingdom", "squawk": "2311"},
+        {"icao24": "a3b4c5", "callsign": "EZY123  ", "country": "United Kingdom", "squawk": "2312"},
+        {"icao24": "73809e", "callsign": "AFR234  ", "country": "France", "squawk": "3341"},
+        {"icao24": "4ca25b", "callsign": "RYR456  ", "country": "Ireland", "squawk": "4451"}
     ]
     
     aircraft_list = []
@@ -62,21 +56,16 @@ def get_aircraft() -> List[dict]:
         
     return aircraft_list
 
-def get_vessels() -> list:
+def get_vessels() -> list[dict]:
     """
     Returns a list of synthetic AISStream PositionReport messages.
     """
+    # Mock AISStream data for English Channel
     profiles = [
-        {"mmsi": "353136000", "name": "FRONT FALCON", "type": 80}, # 80 is Tanker
-        {"mmsi": "415053000", "name": "MT NAVIGATOR", "type": 81},
-        {"mmsi": "538006764", "name": "SEAWAYS KINETIC", "type": 80},
-        {"mmsi": "636015509", "name": "PACIFIC GOLD", "type": 84},
-        {"mmsi": "477028100", "name": "HONG KONG STAR", "type": 70}, # Cargo
-        {"mmsi": "373735000", "name": "BW TULIP", "type": 80},
-        {"mmsi": "211516000", "name": "HMM ALGECIRAS", "type": 70},
-        {"mmsi": "258079000", "name": "NORDIC FREEDOM", "type": 80},
-        {"mmsi": "422038700", "name": "HORMUZ PRIDE", "type": 80},
-        {"mmsi": "235109000", "name": "ROYAL GLORY", "type": 89},
+        {"mmsi": "235071110", "name": "DOVER SPIRIT", "type": 80}, # Tanker
+        {"mmsi": "227445780", "name": "CALAIS EXPRESS", "type": 70}, # Cargo
+        {"mmsi": "235012345", "name": "P&O PIONEER", "type": 60}, # Passenger
+        {"mmsi": "228067890", "name": "LE HARVE GLORY", "type": 80}
     ]
     
     messages = []

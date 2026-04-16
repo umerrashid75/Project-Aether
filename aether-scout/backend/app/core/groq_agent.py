@@ -45,16 +45,16 @@ tools = [
 def mock_lookup_vessel_registry(entity_id, entity_type):
     if entity_type == "vessel":
         return json.dumps({
-            "registry": "Panama",
-            "owner": "Meridian Shipping LLC",
-            "vessel_type": "Tanker",
-            "route_history": "Gulf-to-India transit"
+            "registry": "United Kingdom",
+            "owner": "P&O Ferries",
+            "vessel_type": "Ro-Ro Passenger Ship",
+            "route_history": "Dover to Calais transit"
         })
     else:
         return json.dumps({
-            "registry": "United Arab Emirates",
-            "owner": "Emirates Leasing",
-            "aircraft_type": "Boeing 777"
+            "registry": "France",
+            "owner": "Air France",
+            "aircraft_type": "Airbus A320"
         })
 
 def mock_check_sanctions_list(entity_id, flag_state=None):
@@ -65,9 +65,9 @@ def mock_check_sanctions_list(entity_id, flag_state=None):
         "notes": "No current sanctions found for entity."
     })
 
-SYSTEM_PROMPT = """You are AETHER-ANALYST, an intelligence officer producing professional Situation Reports (SITREPs) for the Strait of Hormuz Monitoring Initiative.
+SYSTEM_PROMPT = """You are AETHER-ANALYST, an intelligence officer producing professional Situation Reports (SITREPs) for the English Channel (Dover Strait) Monitoring Initiative.
 
-Write in a factual, objective, third-person voice. Be extremely concise. No speculation beyond what the telemetry data supports. No alarmist language. Structure every SITREP exactly as follows, with no extra prefixes or suffixes:
+Write in a factual, objective, third-person voice. Be extremely concise. No speculation beyond what the telemetry data supports. No alarmist language. Analyze for Traffic Separation Scheme (TSS) Violations, Cross-Border Anomalies, Trade Congestion near Ports of Dover/Calais, and Ferry Regularity. Structure every SITREP exactly as follows, with no extra prefixes or suffixes:
 
 **HEADLINE:** [One short punchy sentence, max 10 words]
 **CLASSIFICATION:** UNCLASSIFIED // OSINT // FOR EDUCATIONAL USE ONLY
@@ -94,26 +94,26 @@ async def generate_sitrep(anomaly: Anomaly) -> Sitrep:
 
         # Registry and sanctions are simulated as the mock tool results would return
         registry_info = (
-            "MMSI/ICAO registered in Panama via Meridian Shipping LLC. "
-            "Vessel type: Chemical Tanker. Last port: Bandar Abbas, IR. Route: Gulf-to-India transit."
+            "MMSI/ICAO registered in UK via P&O Ferries. "
+            "Vessel type: Passenger Ro-Ro. Last port: Dover, UK. Route: Dover-to-Calais transit."
             if anomaly.entity_type == "vessel"
-            else "ICAO24 registered United Arab Emirates. Owner: Emirates Executive Aviation. Aircraft type: Gulfstream G650."
+            else "ICAO24 registered France. Owner: Air France. Aircraft type: Airbus A320."
         )
 
-        mock_body = f"""**HEADLINE:** {entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in Hormuz transit corridor.
+        mock_body = f"""**HEADLINE:** {entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in English Channel corridor.
 **CLASSIFICATION:** UNCLASSIFIED // OSINT // FOR EDUCATIONAL USE ONLY
 **ENTITY:** {anomaly.entity_id} ({entity_type_label})
 **ANOMALY TYPE:** {anomaly_label}
 **THREAT LEVEL:** {threat}
 **CONFIDENCE:** {confidence}%
-**SUMMARY:** Automated surveillance detected a {anomaly_label} event associated with entity {anomaly.entity_id} within the Strait of Hormuz monitoring zone. Telemetry indicates a threat score of {anomaly.threat_score:.2f}, consistent with {anomaly.details.get('reason', 'irregular movement patterns')}. Pattern analysis places this entity within the HIGH-INTEREST corridor between the UAE and Iranian coastlines.
+**SUMMARY:** Automated surveillance detected a {anomaly_label} event associated with entity {anomaly.entity_id} within the English Channel monitoring zone. Telemetry indicates a threat score of {anomaly.threat_score:.2f}, consistent with {anomaly.details.get('reason', 'irregular movement patterns')}. Pattern analysis places this entity within the HIGH-INTEREST Traffic Separation Scheme (TSS) between the UK and French coastlines.
 **REGISTRY CHECK:** {registry_info}
 **SANCTIONS STATUS:** No matches found on OFAC, EU, or UN consolidated sanctions lists as of last sync. Entity flagged for continued monitoring pending manual verification.
 **RECOMMENDED ACTION:** Maintain passive tracking. Cross-reference against AIS history for the past 72 hours. Escalate to senior analyst if anomaly repeats within next polling cycle."""
 
         return Sitrep(
             anomaly_id=anomaly.id,
-            headline=f"{entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in Hormuz transit corridor.",
+            headline=f"{entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in English Channel corridor.",
             body=mock_body,
             confidence=anomaly.threat_score,
             recommended_action="Maintain passive tracking. Escalate if anomaly repeats."

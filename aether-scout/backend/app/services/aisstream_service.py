@@ -94,7 +94,7 @@ async def stream_vessels():
         
         subscribe_message = {
             "APIKey": api_key,
-            "BoundingBoxes": [[[25.0, 54.0], [28.0, 59.0]]],
+            "BoundingBoxes": [[[50.5, 0.5], [51.5, 2.5]]],
             "FilterMessageTypes": ["PositionReport"]
         }
         

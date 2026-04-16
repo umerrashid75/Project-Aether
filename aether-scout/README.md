@@ -1,6 +1,5 @@
 # Project Aether
-
-Autonomous OSINT Intelligence Scout for the Strait of Hormuz.
+Autonomous OSINT Intelligence Scout for the English Channel (Dover Strait).
 
 ## Description
 A digital scout for civil maritime safety, trade transparency, and aviation anomaly detection using public OSINT feeds.

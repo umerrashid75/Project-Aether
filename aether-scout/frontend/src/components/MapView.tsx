@@ -28,8 +28,8 @@ export default function MapView() {
     <div className="absolute inset-0 bg-slate-900">
       <Map
         initialViewState={{
-          longitude: 56.5,
-          latitude: 26.6,
+          longitude: 1.5,
+          latitude: 51.0,
           zoom: 8
         }}
         mapStyle="mapbox://styles/mapbox/dark-v11"

@@ -31,10 +31,10 @@ async def poll_aircraft():
                 auth = (user, pwd) if user and pwd else None
                 
                 params = {
-                    "lamin": 25.0,
-                    "lomin": 54.0,
-                    "lamax": 28.0,
-                    "lomax": 59.0
+                    "lamin": 50.5,
+                    "lomin": 0.5,
+                    "lamax": 51.5,
+                    "lomax": 2.5
                 }
                 
                 async with httpx.AsyncClient() as client:
