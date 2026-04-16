@@ -3,6 +3,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import IncidentFeed from '../../components/IncidentFeed';
 import DemoModeToggle from '../../components/DemoModeToggle';
+import { EntitySelectionProvider } from '../../contexts/EntitySelectionContext';
 
 // MapView uses mapbox-gl which requires browser APIs (window/document).
 // Dynamic import with ssr:false prevents it from crashing during server rendering.
@@ -35,12 +36,14 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden relative">
-        <div className="flex-1 relative">
-          <MapView />
-        </div>
-        <IncidentFeed />
-      </main>
+      <EntitySelectionProvider>
+        <main className="flex-1 flex overflow-hidden relative">
+          <div className="flex-1 relative">
+            <MapView />
+          </div>
+          <IncidentFeed />
+        </main>
+      </EntitySelectionProvider>
     </div>
   );
 }

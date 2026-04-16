@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, FileText, MapPin, Search, Cpu } from 'lucide-react';
 import ThreatBadge from './ThreatBadge';
+import { useEntitySelection } from '../contexts/EntitySelectionContext';
 
 export default function SitrepCard({ incident }: { incident: any }) {
+  const { selectedEntityId, setSelectedEntityId, setHoveredEntityId } = useEntitySelection();
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -68,8 +70,17 @@ export default function SitrepCard({ incident }: { incident: any }) {
     });
   };
 
+  const isSelected = selectedEntityId === incident.entity_id;
+
   return (
-    <div className="bg-slate-800/60 border border-slate-700/50 rounded-md p-3 micro-hover">
+    <div 
+      className={`bg-slate-800/60 border rounded-md p-3 micro-hover transition-colors duration-200 cursor-pointer ${
+        isSelected ? 'border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'border-slate-700/50 hover:border-slate-600'
+      }`}
+      onMouseEnter={() => setHoveredEntityId(incident.entity_id)}
+      onMouseLeave={() => setHoveredEntityId(null)}
+      onClick={() => setSelectedEntityId(isSelected ? null : incident.entity_id)}
+    >
       <div className="flex justify-between items-start mb-2">
         <ThreatBadge level={incident.threat_level as any} />
         <span className="text-[10px] text-slate-500 font-mono">
@@ -89,7 +100,10 @@ export default function SitrepCard({ incident }: { incident: any }) {
       <div className="flex flex-col gap-2">
         {!isSitrepGenerated && (
           <button 
-            onClick={generateSitrep}
+            onClick={(e) => {
+              e.stopPropagation();
+              generateSitrep();
+            }}
             disabled={generating}
             className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 rounded transition-colors border border-indigo-500/20 disabled:opacity-50"
           >
@@ -99,7 +113,10 @@ export default function SitrepCard({ incident }: { incident: any }) {
         )}
 
         <button 
-          onClick={() => setExpanded(!expanded)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
           className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors border border-cyan-400/20"
         >
           <FileText size={14} />
@@ -109,7 +126,10 @@ export default function SitrepCard({ incident }: { incident: any }) {
 
         {isCritical && (
           <button 
-            onClick={runSatelliteAnalysis}
+            onClick={(e) => {
+              e.stopPropagation();
+              runSatelliteAnalysis();
+            }}
             disabled={loading}
             className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded transition-colors border border-red-500/20 disabled:opacity-50"
           >

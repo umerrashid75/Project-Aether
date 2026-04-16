@@ -35,6 +35,9 @@ async def anomaly_detection_loop():
     """Background task evaluating rules every 60s."""
     prev_aircraft_states = {}
     prev_vessel_states = {}
+    
+    # Track recently emitted anomalies to prevent duplicates (15 minute cooldown)
+    emitted_anomalies = {}
 
     while True:
         try:
@@ -92,15 +95,27 @@ async def anomaly_detection_loop():
 
             prev_vessel_states = current_vessel_states
             
-            if new_anomalies:
-                ops = [pymongo.InsertOne(a.dict()) for a in new_anomalies]
+            # Filter new anomalies against emitted_anomalies to prevent duplicates
+            filtered_anomalies = []
+            for anom in new_anomalies:
+                key = (anom.entity_id, anom.anomaly_type)
+                last_emitted = emitted_anomalies.get(key, 0)
+                if now.timestamp() - last_emitted > 900: # 15 minutes
+                    filtered_anomalies.append(anom)
+                    emitted_anomalies[key] = now.timestamp()
+            
+            # Clean up old emitted tracking to prevent memory leak
+            emitted_anomalies = {k: v for k, v in emitted_anomalies.items() if now.timestamp() - v <= 900}
+            
+            if filtered_anomalies:
+                ops = [pymongo.InsertOne(a.dict()) for a in filtered_anomalies]
                 await Database.db["anomalies"].bulk_write(ops)
                 
                 # Broadcast fan-out
-                for anom in new_anomalies:
+                for anom in filtered_anomalies:
                     await routes_ws.manager.broadcast(anom.json())
                     
-                logger.info(f"Detected and published {len(new_anomalies)} new anomalies.")
+                logger.info(f"Detected and published {len(filtered_anomalies)} new anomalies.")
 
         except Exception as e:
             logger.error(f"Error in anomaly detection loop: {e}")
