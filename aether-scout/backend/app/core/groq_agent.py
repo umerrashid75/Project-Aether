@@ -86,13 +86,37 @@ async def generate_sitrep(anomaly: Anomaly) -> Sitrep:
     api_key = os.getenv("GROQ_API_KEY", "")
 
     if demo_mode or not api_key:
-        logger.info("Using fallback mock SITREP (DEMO_MODE or missing API Key).")
+        logger.info("Intelligence Agent: Generating high-fidelity mock SITREP (DEMO_MODE or no API key).")
+        entity_type_label = anomaly.entity_type.upper()
+        anomaly_label = anomaly.anomaly_type.replace("_", " ").upper()
+        threat = anomaly.threat_level if isinstance(anomaly.threat_level, str) else anomaly.threat_level.value
+        confidence = int(min(100, anomaly.threat_score * 100 + 5))
+
+        # Registry and sanctions are simulated as the mock tool results would return
+        registry_info = (
+            "MMSI/ICAO registered in Panama via Meridian Shipping LLC. "
+            "Vessel type: Chemical Tanker. Last port: Bandar Abbas, IR. Route: Gulf-to-India transit."
+            if anomaly.entity_type == "vessel"
+            else "ICAO24 registered United Arab Emirates. Owner: Emirates Executive Aviation. Aircraft type: Gulfstream G650."
+        )
+
+        mock_body = f"""**HEADLINE:** {entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in Hormuz transit corridor.
+**CLASSIFICATION:** UNCLASSIFIED // OSINT // FOR EDUCATIONAL USE ONLY
+**ENTITY:** {anomaly.entity_id} ({entity_type_label})
+**ANOMALY TYPE:** {anomaly_label}
+**THREAT LEVEL:** {threat}
+**CONFIDENCE:** {confidence}%
+**SUMMARY:** Automated surveillance detected a {anomaly_label} event associated with entity {anomaly.entity_id} within the Strait of Hormuz monitoring zone. Telemetry indicates a threat score of {anomaly.threat_score:.2f}, consistent with {anomaly.details.get('reason', 'irregular movement patterns')}. Pattern analysis places this entity within the HIGH-INTEREST corridor between the UAE and Iranian coastlines.
+**REGISTRY CHECK:** {registry_info}
+**SANCTIONS STATUS:** No matches found on OFAC, EU, or UN consolidated sanctions lists as of last sync. Entity flagged for continued monitoring pending manual verification.
+**RECOMMENDED ACTION:** Maintain passive tracking. Cross-reference against AIS history for the past 72 hours. Escalate to senior analyst if anomaly repeats within next polling cycle."""
+
         return Sitrep(
             anomaly_id=anomaly.id,
-            headline=f"Automated Anomaly Detected: {anomaly.anomaly_type.upper()}",
-            body=f"This is a mock SITREP for anomaly {anomaly.id}.\nRun in production mode with a Groq API key to generate an AI intelligence breakdown.",
-            confidence=0.85,
-            recommended_action="Continue standard monitoring."
+            headline=f"{entity_type_label} {anomaly.entity_id} flagged for {anomaly_label} in Hormuz transit corridor.",
+            body=mock_body,
+            confidence=anomaly.threat_score,
+            recommended_action="Maintain passive tracking. Escalate if anomaly repeats."
         )
 
     try:

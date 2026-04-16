@@ -116,11 +116,14 @@ async def lifespan(app: FastAPI):
         logger.error(f"Startup DB connection failed: {e}")
         
     tasks = []
-    if Database.client is not None:
-        logger.info("Starting background services...")
+    demo_mode = os.getenv("DEMO_MODE", "false").lower() == "true"
+    if Database.client is not None or demo_mode:
+        logger.info("Starting Multiagent background services (Surveillance + Sentinel)...")
         tasks.append(asyncio.create_task(poll_aircraft()))
         tasks.append(asyncio.create_task(stream_vessels()))
         tasks.append(asyncio.create_task(anomaly_detection_loop()))
+    else:
+        logger.warning("No DB connection and DEMO_MODE=false — skipping background tasks.")
     
     yield
     
@@ -133,7 +136,10 @@ app = FastAPI(title="Project Aether API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

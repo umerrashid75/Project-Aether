@@ -1,21 +1,23 @@
 """
 YOLOv8 ship detection service for satellite imagery analysis.
+Imagery Agent — triggered only for CRITICAL anomalies.
 """
 import os
 import logging
 import httpx
 import asyncio
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
-# Optional import for ultralytics
+# YOLO availability is determined lazily at call time, not at import time.
+# This ensures the rest of the multiagent system starts even if ultralytics is absent.
 YOLO_AVAILABLE = False
 try:
-    from ultralytics import YOLO
+    import ultralytics  # noqa: F401 — just check it exists
     YOLO_AVAILABLE = True
 except ImportError:
-    logger.warning("ultralytics not installed. YOLOv8 detection will be unavailable or use mocks.")
+    logger.warning("ultralytics not installed. YOLOv8 detection will use mock results.")
 
 async def detect_ships_in_tile(tile_url: str) -> Dict[str, Any]:
     """
@@ -51,13 +53,15 @@ async def detect_ships_in_tile(tile_url: str) -> Dict[str, Any]:
                 raise Exception(f"Failed to download image: {response.status_code}")
             image_content = response.content
 
-        # 2. Save temporarily or process in-memory
+        # 2. Save temporarily
         temp_path = "temp_tile.jpg"
         with open(temp_path, "wb") as f:
             f.write(image_content)
 
-        # 3. Load model and run inference
-        # Using yolov8n.pt (Nano) for speed/size - downloads on first call
+        # 3. Lazy import — keeps ultralytics strictly isolated in this agent
+        from ultralytics import YOLO  # noqa
+
+        # 4. Load model and run inference (yolov8n.pt downloads on first run)
         model = YOLO("yolov8n.pt")
         results = model(temp_path)
 

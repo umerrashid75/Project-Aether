@@ -66,9 +66,11 @@ async def poll_aircraft():
                         icao24=icao24,
                         callsign=callsign.strip() if callsign else None,
                         origin_country=country,
-                        position=(float(lon), float(lat)) if lon is not None and lat is not None else None,
+                        position=[float(lon), float(lat)] if lon is not None and lat is not None else None,
                         altitude_m=float(baro_alt) if baro_alt is not None else None,
                         velocity_ms=float(vel) if vel is not None else None,
+                        track=float(track) if track is not None else None,
+                        squawk=str(squawk) if squawk else None,
                         timestamp=datetime.utcfromtimestamp(time_pos) if time_pos else datetime.utcnow()
                     )
                     
