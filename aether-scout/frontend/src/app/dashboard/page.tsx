@@ -1,7 +1,19 @@
+"use client";
 import React from 'react';
-import MapView from '../../components/MapView';
+import dynamic from 'next/dynamic';
 import IncidentFeed from '../../components/IncidentFeed';
 import DemoModeToggle from '../../components/DemoModeToggle';
+
+// MapView uses mapbox-gl which requires browser APIs (window/document).
+// Dynamic import with ssr:false prevents it from crashing during server rendering.
+const MapView = dynamic(() => import('../../components/MapView'), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
+      <div className="text-slate-500 text-sm animate-pulse">Loading map...</div>
+    </div>
+  ),
+});
 
 export default function Dashboard() {
   return (

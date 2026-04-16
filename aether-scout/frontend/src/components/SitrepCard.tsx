@@ -1,5 +1,7 @@
 "use client";
+import { useState } from 'react';
 import { ChevronDown, ChevronUp, FileText, MapPin, Search } from 'lucide-react';
+import ThreatBadge from './ThreatBadge';
 
 export default function SitrepCard({ incident }: { incident: any }) {
   const [expanded, setExpanded] = useState(false);
