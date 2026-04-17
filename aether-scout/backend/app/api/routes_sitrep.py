@@ -6,8 +6,9 @@ from pydantic import BaseModel
 import os
 import time
 from app.models.db import Database
-from app.models.schemas import Sitrep, Anomaly
+from app.models.schemas import Sitrep, Anomaly, AircraftState, VesselState
 from app.core.groq_agent import generate_sitrep
+import pymongo
 
 router = APIRouter()
 
@@ -85,7 +86,34 @@ async def generate_sitrep_endpoint(request: SitrepRequest):
     if anomaly is None:
         raise HTTPException(status_code=404, detail="Anomaly not found.")
 
-    sitrep = await generate_sitrep(anomaly)
+    # Context Retrieval: Fetch current and previous states for the entity
+    state = None
+    prev_state = None
+    
+    if getattr(Database, "db", None) is not None:
+        collection_name = "aircraft_states" if anomaly.entity_type.lower() == "aircraft" else "vessel_states"
+        id_field = "icao24" if anomaly.entity_type.lower() == "aircraft" else "mmsi"
+        
+        # Get last 2 states to provide delta context
+        cursor = Database.db[collection_name].find(
+            {id_field: anomaly.entity_id}
+        ).sort("timestamp", pymongo.DESCENDING).limit(2)
+        
+        states_docs = [doc async for doc in cursor]
+        if states_docs:
+            for s in states_docs: s.pop("_id", None)
+            
+            if len(states_docs) >= 1:
+                state_cls = AircraftState if anomaly.entity_type.lower() == "aircraft" else VesselState
+                state = state_cls(**states_docs[0])
+            if len(states_docs) >= 2:
+                prev_state = state_cls(**states_docs[1])
+
+    sitrep = await generate_sitrep(anomaly, state, prev_state)
+    
+    if sitrep is None:
+        # This happens if skipped (e.g. LOW threat)
+        return {"id": "skipped", "anomaly_id": anomaly.id, "headline": "No analysis required", "body": "Threat level below SITREP generation threshold."}
 
     # Persist to DB if available
     if getattr(Database, "db", None) is not None:
