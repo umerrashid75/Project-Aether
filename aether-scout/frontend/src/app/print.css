@@ -1,0 +1,71 @@
+@media print {
+  /* Hide everything except the print target */
+  body > * {
+    display: none !important;
+  }
+  #sitrep-print-target {
+    display: block !important;
+  }
+
+  #sitrep-print-target {
+    font-family: "Courier New", monospace;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+    padding: 2cm;
+    max-width: 18cm;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .print-header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 12pt;
+    margin-bottom: 16pt;
+  }
+
+  .print-project-name {
+    font-size: 9pt;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+  }
+
+  .print-headline {
+    font-size: 15pt;
+    font-weight: bold;
+    margin: 6pt 0 4pt;
+  }
+
+  .print-classification {
+    font-size: 8pt;
+    letter-spacing: 0.08em;
+    color: #444;
+  }
+
+  .print-section-label {
+    font-weight: bold;
+    font-size: 9pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 12pt;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2pt;
+  }
+
+  .print-section-body {
+    margin-top: 4pt;
+    font-size: 10pt;
+    white-space: pre-wrap;
+  }
+
+  .print-footer {
+    margin-top: 24pt;
+    padding-top: 8pt;
+    border-top: 1px solid #ccc;
+    font-size: 8pt;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+  }
+}

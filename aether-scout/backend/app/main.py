@@ -14,7 +14,8 @@ from app.models.db import Database
 from app.models.schemas import AircraftState, VesselState
 from app.services.opensky_service import poll_aircraft
 from app.services.aisstream_service import stream_vessels
-from app.api import routes_ws, routes_sitrep, routes_telemetry, routes_vision
+from app.api import routes_ws, routes_sitrep, routes_telemetry, routes_vision, routes_anomalies
+from app.api.routes_voice import router as voice_router
 
 # Routers included after app instantiation below
 from app.core.anomaly_engine import (
@@ -169,6 +170,8 @@ app.include_router(routes_ws.router)
 app.include_router(routes_sitrep.router)
 app.include_router(routes_telemetry.router)
 app.include_router(routes_vision.router)
+app.include_router(routes_anomalies.router)
+app.include_router(voice_router)
 
 @app.get("/health")
 async def health_check():
