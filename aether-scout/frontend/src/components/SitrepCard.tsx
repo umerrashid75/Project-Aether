@@ -36,7 +36,7 @@ export default function SitrepCard({ incident }: { incident: any }) {
 
   const generateSitrep = async () => {
     setGenerating(true);
-    setExpanded(true); // Auto-expand to show loading or result
+    setExpanded(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const res = await fetch(`${apiUrl}/api/sitrep/generate`, {
@@ -64,7 +64,7 @@ export default function SitrepCard({ incident }: { incident: any }) {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="text-indigo-200 font-semibold">{part.slice(2, -2)}</strong>;
+        return <strong key={i} className="text-[#00e5ff] font-bold">{part.slice(2, -2)}</strong>;
       }
       return <span key={i}>{part}</span>;
     });
@@ -74,8 +74,8 @@ export default function SitrepCard({ incident }: { incident: any }) {
 
   return (
     <div 
-      className={`bg-slate-800/60 border rounded-md p-3 micro-hover transition-colors duration-200 cursor-pointer ${
-        isSelected ? 'border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'border-slate-700/50 hover:border-slate-600'
+      className={`glass-panel border-l-2 p-3 transition-colors duration-200 cursor-pointer ${
+        isSelected ? 'border-l-[#00e5ff] shadow-[inset_4px_0_10px_rgba(0,229,255,0.2)] bg-[#00e5ff]/5' : 'border-l-slate-700/50 hover:bg-slate-800/40 hover:border-l-slate-500'
       }`}
       onMouseEnter={() => setHoveredEntityId(incident.entity_id)}
       onMouseLeave={() => setHoveredEntityId(null)}
@@ -83,18 +83,18 @@ export default function SitrepCard({ incident }: { incident: any }) {
     >
       <div className="flex justify-between items-start mb-2">
         <ThreatBadge level={incident.threat_level as any} />
-        <span className="text-[10px] text-slate-500 font-mono">
+        <span className="text-[9px] text-[#00e5ff]/60 font-mono tracking-widest border border-[#00e5ff]/10 px-1 py-0.5">
           {new Date(incident.detected_at).toLocaleTimeString()}
         </span>
       </div>
       
-      <h3 className="text-sm font-semibold text-slate-200 mb-1">
-        {incident.anomaly_type.toUpperCase().replace("_", " ")}
+      <h3 className="text-sm font-semibold text-slate-100 mb-1 font-mono tracking-wide">
+        [ {incident.anomaly_type.toUpperCase().replace("_", " ")} ]
       </h3>
       
       <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-        <MapPin size={12} />
-        <span className="font-mono">{incident.entity_id} ({incident.entity_type})</span>
+        <MapPin size={10} className="text-[#00e5ff]" />
+        <span className="font-mono text-[10px] tracking-wide text-cyan-200/70">{incident.entity_id} <span className="opacity-50">||</span> {incident.entity_type}</span>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -105,9 +105,9 @@ export default function SitrepCard({ incident }: { incident: any }) {
               generateSitrep();
             }}
             disabled={generating}
-            className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 rounded transition-colors border border-indigo-500/20 disabled:opacity-50"
+            className="w-full py-1.5 flex items-center justify-center gap-1.5 text-[10px] font-mono tracking-widest bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors border border-emerald-500/30 disabled:opacity-50"
           >
-            <Cpu size={14} className={generating ? "animate-pulse" : ""} />
+            <Cpu size={12} className={generating ? "animate-pulse" : ""} />
             {generating ? 'AETHER-ANALYST WORKING...' : 'GENERATE AI SITREP'}
           </button>
         )}
@@ -117,11 +117,11 @@ export default function SitrepCard({ incident }: { incident: any }) {
             e.stopPropagation();
             setExpanded(!expanded);
           }}
-          className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors border border-cyan-400/20"
+          className="w-full py-1.5 flex items-center justify-center gap-1.5 text-[10px] font-mono tracking-widest text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors border border-[#00e5ff]/30"
         >
-          <FileText size={14} />
+          <FileText size={12} />
           {isSitrepGenerated ? 'VIEW SITREP / TELEMETRY' : 'VIEW RAW TELEMETRY'}
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
         </button>
 
         {isCritical && (
@@ -131,27 +131,27 @@ export default function SitrepCard({ incident }: { incident: any }) {
               runSatelliteAnalysis();
             }}
             disabled={loading}
-            className="w-full py-1.5 flex items-center justify-center gap-1.5 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded transition-colors border border-red-500/20 disabled:opacity-50"
+            className="w-full py-1.5 flex items-center justify-center gap-1.5 text-[10px] font-mono tracking-widest bg-red-500/10 text-[#e0282b] hover:bg-red-500/20 transition-colors border border-[#e0282b]/30 disabled:opacity-50"
           >
-            <Search size={14} className={loading ? "animate-spin" : ""} />
+            <Search size={12} className={loading ? "animate-spin" : ""} />
             {loading ? 'ANALYZING TILE...' : 'SATELLITE SHIP DETECTION'}
           </button>
         )}
       </div>
 
       {(expanded || visionData) && (
-        <div className="mt-3 p-2 bg-slate-900/80 rounded border border-slate-800">
+        <div className="mt-3 p-2 bg-obsidian/80 border border-[#00e5ff]/20 targeting-bracket shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] text-[#00e5ff]">
           {visionData && (
-            <div className="mb-3 pb-3 border-b border-white/5">
+            <div className="mb-3 pb-3 border-b border-[#00e5ff]/10">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] text-red-400 font-bold uppercase tracking-widest">AI Vision Result</span>
-                <span className="text-[10px] text-slate-500 font-mono">{visionData.ships_detected} ships found</span>
+                <span className="text-[10px] text-[#e0282b] font-mono font-bold uppercase tracking-widest border-b border-[#e0282b]/30">AI Vision Result</span>
+                <span className="text-[10px] text-cyan-200/50 font-mono">{visionData.ships_detected} SHIPS FOUND</span>
               </div>
-              <div className="p-2 bg-slate-800/50 rounded text-[10px] font-mono text-slate-300">
+              <div className="p-2 bg-[#e0282b]/5 text-[10px] font-mono text-slate-300">
                 {visionData.detections.map((d: any, i: number) => (
-                  <div key={i} className="flex justify-between border-b border-white/5 last:border-0 py-1">
-                     <span>Target {i+1}</span>
-                     <span className="text-cyan-400">{(d.confidence * 100).toFixed(1)}% conf</span>
+                  <div key={i} className="flex justify-between border-b border-[#00e5ff]/10 last:border-0 py-1">
+                     <span className="text-[#00e5ff]">TGT_{i+1}</span>
+                     <span className="text-cyan-400">{(d.confidence * 100).toFixed(1)}% CONF</span>
                   </div>
                 ))}
               </div>
@@ -161,21 +161,23 @@ export default function SitrepCard({ incident }: { incident: any }) {
           {expanded && (
             <>
               {sitrepData ? (
-                <div className="text-xs text-slate-300 font-mono whitespace-pre-wrap mt-1 leading-relaxed border-t border-indigo-500/30 pt-2 bg-indigo-950/10 p-2 rounded">
-                  <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                <div className="text-xs text-slate-300 font-mono whitespace-pre-wrap mt-1 leading-relaxed border-t border-[#f5a623]/30 pt-2 bg-[#f5a623]/5 p-2">
+                  <div className="text-[10px] text-[#f5a623] font-bold uppercase tracking-widest mb-2 flex items-center gap-2 border-b border-[#f5a623]/20 pb-1">
                     <Cpu size={12} />
                     AETHER-ANALYST REPORT
                   </div>
-                  {renderFormattedText(sitrepData.body)}
+                  <div className="opacity-90 pl-2 border-l-2 border-[#00e5ff]/30 text-[10px]">
+                    {renderFormattedText(sitrepData.body)}
+                  </div>
                 </div>
               ) : (
                 <>
-                  <pre className="text-[10px] text-slate-300 font-mono whitespace-pre-wrap mt-1 overflow-x-auto">
+                  <pre className="text-[10px] text-[#00e5ff]/70 font-mono whitespace-pre-wrap mt-1 overflow-x-auto p-2 bg-[#00e5ff]/5 border border-[#00e5ff]/10">
                     {JSON.stringify(incident.details, null, 2)}
                   </pre>
                   {!isSitrepGenerated && (
-                    <div className="mt-2 text-center text-xs text-slate-500 italic border-t border-slate-700/50 pt-2">
-                      SITREP pending or not requested. Click "Generate AI SITREP" above.
+                    <div className="mt-2 text-center text-[9px] text-[#00e5ff]/50 font-mono uppercase border-t border-[#00e5ff]/10 pt-2">
+                      SITREP PENDING OR NOT REQUESTED.
                     </div>
                   )}
                 </>
