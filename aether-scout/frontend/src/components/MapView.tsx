@@ -80,9 +80,11 @@ export default function MapView() {
                   <div className="p-2 bg-slate-900 text-slate-200">
                     <div className="font-bold border-b border-white/10 pb-1 mb-1">AIRCRAFT: {a.icao24}</div>
                     <div className="text-slate-400">CALLSIGN: {a.callsign?.trim() || "N/A"}</div>
+                    {a.departure && <div className="text-pink-400/80">ORIGIN: {a.departure}</div>}
+                    {a.destination && <div className="text-pink-400/80">DEST: {a.destination}</div>}
                     <div className="text-slate-400">ALTITUDE: {Math.round(a.altitude_m || 0)}m</div>
                     <div className="text-slate-400">VELOCITY: {Math.round(a.velocity_ms || 0)} m/s</div>
-                    <div className="text-slate-400">COUNTRY: {a.country || "Unknown"}</div>
+                    <div className="text-slate-400">COUNTRY: {a.origin_country || "Unknown"}</div>
                   </div>
                 </Popup>
               )}
@@ -132,6 +134,8 @@ export default function MapView() {
                   <div className="p-2 bg-slate-900 text-slate-200">
                     <div className="font-bold border-b border-white/10 pb-1 mb-1">VESSEL: {v.mmsi}</div>
                     <div className="text-slate-400">NAME: {v.ship_name?.trim() || "Unknown"}</div>
+                    {v.departure && <div className="text-teal-400/80">ORIGIN: {v.departure}</div>}
+                    {v.destination && <div className="text-teal-400/80">DEST: {v.destination}</div>}
                     <div className="text-slate-400">SPEED: {v.speed_knots || 0} kt</div>
                     <div className="text-slate-400">COURSE: {v.course || 0}°</div>
                   </div>

@@ -141,3 +141,36 @@ def detect_gnss_spoof_vessel(state: VesselState, prev: VesselState) -> Anomaly:
         )
         
     return None
+
+def detect_rendezvous(aircraft: AircraftState, vessels: list[VesselState]) -> Anomaly:
+    if not aircraft.position or not aircraft.altitude_m or not aircraft.velocity_ms:
+        return None
+        
+    # Check if aircraft is low and slow (under 1500 meters, under 150 m/s (~540 km/h) which covers helicopters/drones/low props)
+    if aircraft.altitude_m < 1500 and aircraft.velocity_ms < 150:
+        for v in vessels:
+            if not v.position:
+                continue
+                
+            dist_km = haversine(aircraft.position[0], aircraft.position[1], v.position[0], v.position[1])
+            
+            # If within 1.5km of a vessel
+            if dist_km < 1.5:
+                score = 0.85 # HIGH/CRITICAL threat score depending on exact bounds
+                return Anomaly(
+                    anomaly_type="covert_rendezvous",
+                    entity_id=aircraft.icao24,
+                    entity_type="aircraft",
+                    position=list(aircraft.position),
+                    threat_score=score,
+                    threat_level=calculate_threat_score(score),
+                    details={
+                        "associated_vessel_mmsi": v.mmsi,
+                        "vessel_name": v.ship_name,
+                        "distance_km": round(dist_km, 2),
+                        "aircraft_altitude_m": round(aircraft.altitude_m, 2),
+                        "aircraft_velocity_ms": round(aircraft.velocity_ms, 2),
+                        "reason": f"Aircraft covert rendezvous detected with vessel {v.mmsi}"
+                    }
+                )
+    return None

@@ -13,6 +13,8 @@ class AircraftState(BaseModel):
     velocity_ms: Optional[float] = None
     track: Optional[float] = None       # heading in degrees (for map rotation)
     squawk: Optional[str] = None        # transponder code (7700/7600/7500 = emergency)
+    departure: Optional[str] = None     # departure ICAO
+    destination: Optional[str] = None   # destination ICAO
     timestamp: datetime
     source: str = "opensky"
 
@@ -23,6 +25,8 @@ class VesselState(BaseModel):
     position: List[float] # [lon, lat]
     speed_knots: Optional[float] = None
     course: Optional[float] = None
+    departure: Optional[str] = None
+    destination: Optional[str] = None
     timestamp: datetime
     source: str = "aisstream"
 

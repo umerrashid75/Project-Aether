@@ -26,8 +26,8 @@ def get_aircraft() -> List[dict]:
     aircraft_list = []
     
     for p in profiles:
-        lng = random.uniform(54.0, 59.0)
-        lat = random.uniform(25.0, 28.0)
+        lng = random.uniform(0.5, 2.5)   # Dover Strait
+        lat = random.uniform(50.5, 51.5) # Dover Strait
         # Random altitude mostly at standard cruising (9000 - 11000 m)
         # Occasional low flyer for anomaly testing
         alt = random.uniform(3000, 11000)
@@ -72,8 +72,8 @@ def get_vessels() -> list[dict]:
     base_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     
     for p in profiles:
-        lng = random.uniform(54.0, 59.0)
-        lat = random.uniform(25.0, 28.0)
+        lng = random.uniform(0.5, 2.5)   # Dover Strait
+        lat = random.uniform(50.5, 51.5) # Dover Strait
         sog = random.uniform(8.0, 16.0) # Speed over ground in knots
         cog = random.uniform(0, 360) # Course
         
@@ -95,6 +95,22 @@ def get_vessels() -> list[dict]:
                 }
             }
         }
+        
+        msg_static = {
+            "MessageType": "ShipStaticData",
+            "MetaData": {
+                "MMSI": int(p["mmsi"])
+            },
+            "Message": {
+                "ShipStaticData": {
+                    "UserID": int(p["mmsi"]),
+                    "Name": p["name"],
+                    "Type": p["type"],
+                    "Destination": "DOVER PORT" if int(p["mmsi"]) % 2 == 0 else "CALAIS PORT"
+                }
+            }
+        }
+        messages.append(msg_static)
         messages.append(msg)
         
     return messages

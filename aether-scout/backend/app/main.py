@@ -21,7 +21,8 @@ from app.core.anomaly_engine import (
     detect_gnss_spoof_aircraft,
     detect_low_flight,
     detect_dark_transit,
-    detect_gnss_spoof_vessel
+    detect_gnss_spoof_vessel,
+    detect_rendezvous
 )
 from dotenv import load_dotenv
 
@@ -65,6 +66,10 @@ async def anomaly_detection_loop():
                         
                     anom_low = detect_low_flight(state)
                     if anom_low: new_anomalies.append(anom_low)
+                    
+                    active_vessels = list(prev_vessel_states.values())
+                    anom_rendezvous = detect_rendezvous(state, active_vessels)
+                    if anom_rendezvous: new_anomalies.append(anom_rendezvous)
                 except Exception as e:
                     pass
 
