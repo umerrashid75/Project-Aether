@@ -44,6 +44,9 @@ export default function Dashboard() {
           <IncidentFeed />
         </main>
       </EntitySelectionProvider>
+
+      {/* Hidden print target — populated by SitrepCard.handleExport() */}
+      <div id="sitrep-print-target" style={{ display: 'none' }} />
     </div>
   );
 }
