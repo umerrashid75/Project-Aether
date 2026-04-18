@@ -1,10 +1,20 @@
 @media print {
+  /* Reset body for print */
+  body {
+    visibility: visible !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
   /* Hide everything except the print target */
   body > * {
     display: none !important;
   }
-  #sitrep-print-target {
+  
+  /* Show the target specifically */
+  body > #sitrep-print-target {
     display: block !important;
+    visibility: visible !important;
   }
 
   #sitrep-print-target {
