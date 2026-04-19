@@ -1,6 +1,6 @@
 "use client";
 import { memo, useState } from 'react';
-import { ChevronDown, ChevronUp, FileText, MapPin, Search, Cpu, FileDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, MapPin, Cpu, FileDown } from 'lucide-react';
 import ThreatBadge from './ThreatBadge';
 import { useEntitySelectionActions, useSelectedEntityId } from '../contexts/EntitySelectionContext';
 import { parseSitrepSections } from '../lib/sitrepParser';
@@ -9,32 +9,9 @@ function SitrepCardComponent({ incident }: { incident: any }) {
   const selectedEntityId = useSelectedEntityId();
   const { setSelectedEntityId, setHoveredEntityId } = useEntitySelectionActions();
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [visionData, setVisionData] = useState<any>(null);
   const [sitrepData, setSitrepData] = useState<any>(null);
   const isSitrepGenerated = incident.sitrep_generated || sitrepData !== null;
-  const isCritical = incident.threat_level === 'CRITICAL';
-
-  const runSatelliteAnalysis = async () => {
-    setLoading(true);
-    try {
-      const dummyUrl = "https://example.com/tiles/sentinel2_latest.jpg";
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      
-      const res = await fetch(`${apiUrl}/api/vision/detect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tile_url: dummyUrl })
-      });
-      const data = await res.json();
-      setVisionData(data);
-    } catch (e) {
-      console.error("Vision detection failed", e);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const generateSitrep = async () => {
     setGenerating(true);
@@ -184,85 +161,50 @@ function SitrepCardComponent({ incident }: { incident: any }) {
           {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
         </button>
 
-        {isCritical && (
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              runSatelliteAnalysis();
-            }}
-            disabled={loading}
-            className="w-full py-1.5 flex items-center justify-center gap-1.5 text-[10px] font-mono tracking-widest bg-red-500/10 text-[#e0282b] hover:bg-red-500/20 transition-colors border border-[#e0282b]/30 disabled:opacity-50"
-          >
-            <Search size={12} className={loading ? "animate-spin" : ""} />
-            {loading ? 'ANALYZING TILE...' : 'SATELLITE SHIP DETECTION'}
-          </button>
-        )}
       </div>
 
-      {(expanded || visionData) && (
+      {expanded && (
         <div className="mt-3 p-2 bg-obsidian/80 border border-[#00e5ff]/20 targeting-bracket shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] text-[#00e5ff]">
-          {visionData && (
-            <div className="mb-3 pb-3 border-b border-[#00e5ff]/10">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] text-[#e0282b] font-mono font-bold uppercase tracking-widest border-b border-[#e0282b]/30">AI Vision Result</span>
-                <span className="text-[10px] text-cyan-200/50 font-mono">{visionData.ships_detected} SHIPS FOUND</span>
+          {sitrepData ? (
+            <div className="text-xs text-slate-300 font-mono whitespace-pre-wrap mt-1 leading-relaxed border-t border-[#f5a623]/30 pt-2 bg-[#f5a623]/5 p-2">
+              <div className="text-[10px] text-[#f5a623] font-bold uppercase tracking-widest mb-2 flex items-center gap-2 border-b border-[#f5a623]/20 pb-1">
+                <Cpu size={12} />
+                GOD'S EYE ANALYST REPORT
               </div>
-              <div className="p-2 bg-[#e0282b]/5 text-[10px] font-mono text-slate-300">
-                {visionData.detections.map((d: any, i: number) => (
-                  <div key={i} className="flex justify-between border-b border-[#00e5ff]/10 last:border-0 py-1">
-                     <span className="text-[#00e5ff]">TGT_{i+1}</span>
-                     <span className="text-cyan-400">{(d.confidence * 100).toFixed(1)}% CONF</span>
-                  </div>
-                ))}
+              <div className="opacity-90 pl-2 border-l-2 border-[#00e5ff]/30 text-[10px]">
+                {renderFormattedText(sitrepData.body)}
               </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleExport(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  marginTop: '12px',
+                  padding: '6px 12px',
+                  background: 'transparent',
+                  border: '1px solid #334155',
+                  borderRadius: '6px',
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                  fontFamily: 'monospace',
+                  cursor: 'pointer',
+                  letterSpacing: '0.05em'
+                }}
+              >
+                <FileDown size={14} />
+                EXPORT PDF
+              </button>
             </div>
-          )}
-          
-          {expanded && (
+          ) : (
             <>
-              {sitrepData ? (
-                <div className="text-xs text-slate-300 font-mono whitespace-pre-wrap mt-1 leading-relaxed border-t border-[#f5a623]/30 pt-2 bg-[#f5a623]/5 p-2">
-                  <div className="text-[10px] text-[#f5a623] font-bold uppercase tracking-widest mb-2 flex items-center gap-2 border-b border-[#f5a623]/20 pb-1">
-                    <Cpu size={12} />
-                    GOD'S EYE ANALYST REPORT
-                  </div>
-                  <div className="opacity-90 pl-2 border-l-2 border-[#00e5ff]/30 text-[10px]">
-                    {renderFormattedText(sitrepData.body)}
-                  </div>
-                  {/* PDF Export button */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleExport(); }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      marginTop: '12px',
-                      padding: '6px 12px',
-                      background: 'transparent',
-                      border: '1px solid #334155',
-                      borderRadius: '6px',
-                      color: '#94a3b8',
-                      fontSize: '12px',
-                      fontFamily: 'monospace',
-                      cursor: 'pointer',
-                      letterSpacing: '0.05em'
-                    }}
-                  >
-                    <FileDown size={14} />
-                    EXPORT PDF
-                  </button>
+              <pre className="text-[10px] text-[#00e5ff]/70 font-mono whitespace-pre-wrap mt-1 overflow-x-auto p-2 bg-[#00e5ff]/5 border border-[#00e5ff]/10">
+                {JSON.stringify(incident.details, null, 2)}
+              </pre>
+              {!isSitrepGenerated && (
+                <div className="mt-2 text-center text-[9px] text-[#00e5ff]/50 font-mono uppercase border-t border-[#00e5ff]/10 pt-2">
+                  SITREP PENDING OR NOT REQUESTED.
                 </div>
-              ) : (
-                <>
-                  <pre className="text-[10px] text-[#00e5ff]/70 font-mono whitespace-pre-wrap mt-1 overflow-x-auto p-2 bg-[#00e5ff]/5 border border-[#00e5ff]/10">
-                    {JSON.stringify(incident.details, null, 2)}
-                  </pre>
-                  {!isSitrepGenerated && (
-                    <div className="mt-2 text-center text-[9px] text-[#00e5ff]/50 font-mono uppercase border-t border-[#00e5ff]/10 pt-2">
-                      SITREP PENDING OR NOT REQUESTED.
-                    </div>
-                  )}
-                </>
               )}
             </>
           )}

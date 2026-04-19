@@ -15,7 +15,7 @@ from app.models.db import Database
 from app.models.schemas import AircraftState, VesselState
 from app.services.opensky_service import poll_aircraft
 from app.services.aisstream_service import stream_vessels
-from app.api import routes_ws, routes_sitrep, routes_telemetry, routes_vision
+from app.api import routes_ws, routes_sitrep, routes_telemetry
 from app.api.routes_region import router as region_router
 
 # Routers included after app instantiation below
@@ -184,7 +184,6 @@ app.add_middleware(
 app.include_router(routes_ws.router)
 app.include_router(routes_sitrep.router)
 app.include_router(routes_telemetry.router)
-app.include_router(routes_vision.router)
 app.include_router(region_router)
 
 
