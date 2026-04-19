@@ -79,3 +79,47 @@
     justify-content: space-between;
   }
 }
+
+/* Screen Preview Styles — used to show the layout before export */
+@media screen {
+  #sitrep-print-target.on-screen-preview {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.95); /* Deep obsidian overlay */
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* The actual "paper" on the screen */
+  #sitrep-print-target.on-screen-preview > div {
+    background: white;
+    color: black;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2cm;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    font-family: "Courier New", monospace;
+    min-height: calc(100% - 4rem);
+  }
+
+  /* Match the print header/footer styles for on-screen consistency */
+  #sitrep-print-target.on-screen-preview .print-header { border-bottom: 2px solid #000; padding-bottom: 12pt; margin-bottom: 16pt; text-align: left; }
+  #sitrep-print-target.on-screen-preview .print-project-name { font-size: 9pt; letter-spacing: 0.15em; text-transform: uppercase; color: #666; }
+  #sitrep-print-target.on-screen-preview .print-headline { font-size: 15pt; font-weight: bold; margin: 6pt 0 4pt; color: #000; }
+  #sitrep-print-target.on-screen-preview .print-classification { font-size: 8pt; letter-spacing: 0.08em; color: #444; }
+  #sitrep-print-target.on-screen-preview .print-section-label { font-weight: bold; font-size: 9pt; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12pt; border-bottom: 1px solid #ccc; padding-bottom: 2pt; color: #000; text-align: left; }
+  #sitrep-print-target.on-screen-preview .print-section-body { margin-top: 4pt; font-size: 10pt; white-space: pre-wrap; color: #333; text-align: left; }
+  #sitrep-print-target.on-screen-preview .print-footer { margin-top: 24pt; padding-top: 8pt; border-top: 1px solid #ccc; font-size: 8pt; color: #666; display: flex; justify-content: space-between; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

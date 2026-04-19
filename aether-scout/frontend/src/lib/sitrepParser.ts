@@ -5,7 +5,7 @@ export interface SitrepSection {
 
 /**
  * Parses a SITREP markdown body into labeled sections.
- * Splits on **LABEL:** patterns produced by the Groq agent (AETHER-ANALYST).
+ * Splits on **LABEL:** patterns produced by the Groq agent (GOD'S EYE ANALYST).
  */
 export function parseSitrepSections(body: string): SitrepSection[] {
   const sections: SitrepSection[] = []

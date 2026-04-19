@@ -26,7 +26,7 @@ export default function Dashboard() {
             <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-wide">PROJECT AETHER</h1>
+            <h1 className="text-lg font-bold tracking-wide">PROJECT GOD'S EYE</h1>
             <p className="text-xs text-slate-400 uppercase tracking-widest">Dover Intelligence Scout</p>
           </div>
         </div>

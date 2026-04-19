@@ -3,7 +3,7 @@ import './print.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Project Aether | Dover Scout',
+  title: "Project God's Eye | Dover Scout",
   description: 'Autonomous OSINT Intelligence Scout',
 }
 
