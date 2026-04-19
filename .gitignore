@@ -39,3 +39,11 @@ desktop.ini
 *.log
 temp/
 scratch/
+
+# --- Tools / Generated ---
+skills/
+.opencode/
+
+# --- Documentation ---
+*.md
+!README.md
