@@ -4,7 +4,7 @@ import Map, { Marker, Popup } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTelemetry } from '../hooks/useTelemetry';
-import { useEntitySelection } from '../contexts/EntitySelectionContext';
+import { useEntitySelectionActions, useHoveredEntityId, useSelectedEntityId } from '../contexts/EntitySelectionContext';
 import { THREAT_COLORS } from '../lib/threatColors';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -36,7 +36,9 @@ const VesselIcon = ({ color, isMoving, rotate }: { color: string, isMoving: bool
 
 export default function MapView({ onMapReady }: { onMapReady?: (map: MapRef) => void }) {
   const { aircraft, vessels } = useTelemetry();
-  const { selectedEntityId, setSelectedEntityId, hoveredEntityId } = useEntitySelection();
+  const selectedEntityId = useSelectedEntityId();
+  const hoveredEntityId = useHoveredEntityId();
+  const { setSelectedEntityId } = useEntitySelectionActions();
   const mapRef = React.useRef<MapRef | null>(null);
   
   const getColor = (level: string) => THREAT_COLORS[level as keyof typeof THREAT_COLORS] || THREAT_COLORS.LOW;

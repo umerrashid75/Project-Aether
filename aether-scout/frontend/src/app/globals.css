@@ -43,6 +43,16 @@ body {
   scrollbar-width: none;  
 }
 
+.incident-feed-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.incident-card {
+  contain: layout paint;
+  will-change: transform;
+}
+
 /* Radar Scanline & Grid */
 .radar-grid {
   background-image: 

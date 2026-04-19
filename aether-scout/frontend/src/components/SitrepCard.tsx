@@ -1,12 +1,13 @@
 "use client";
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { ChevronDown, ChevronUp, FileText, MapPin, Search, Cpu, FileDown } from 'lucide-react';
 import ThreatBadge from './ThreatBadge';
-import { useEntitySelection } from '../contexts/EntitySelectionContext';
+import { useEntitySelectionActions, useSelectedEntityId } from '../contexts/EntitySelectionContext';
 import { parseSitrepSections } from '../lib/sitrepParser';
 
-export default function SitrepCard({ incident }: { incident: any }) {
-  const { selectedEntityId, setSelectedEntityId, setHoveredEntityId } = useEntitySelection();
+function SitrepCardComponent({ incident }: { incident: any }) {
+  const selectedEntityId = useSelectedEntityId();
+  const { setSelectedEntityId, setHoveredEntityId } = useEntitySelectionActions();
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -133,7 +134,7 @@ export default function SitrepCard({ incident }: { incident: any }) {
 
   return (
     <div 
-      className={`glass-panel border-l-2 p-3 transition-colors duration-200 cursor-pointer ${
+      className={`incident-card border-l-2 p-3 transition-colors duration-200 cursor-pointer ${
         isSelected ? 'border-l-[#00e5ff] shadow-[inset_4px_0_10px_rgba(0,229,255,0.2)] bg-[#00e5ff]/5' : 'border-l-slate-700/50 hover:bg-slate-800/40 hover:border-l-slate-500'
       }`}
       onMouseEnter={() => setHoveredEntityId(incident.entity_id)}
@@ -270,3 +271,7 @@ export default function SitrepCard({ incident }: { incident: any }) {
     </div>
   );
 }
+
+const SitrepCard = memo(SitrepCardComponent, (prev, next) => prev.incident === next.incident);
+
+export default SitrepCard;

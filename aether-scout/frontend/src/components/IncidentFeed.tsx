@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWebSocket } from '../hooks/useWebSocket';
 import SitrepCard from './SitrepCard';
 import { Activity, Wifi, WifiOff } from 'lucide-react';
@@ -17,14 +17,16 @@ export default function IncidentFeed({ resetSignal }: { resetSignal?: number }) 
     'LOW': 1
   };
 
-  const sortedIncidents = [...incidents].sort((a, b) => {
-    const weightA = threatWeight[a.threat_level as keyof typeof threatWeight] || 0;
-    const weightB = threatWeight[b.threat_level as keyof typeof threatWeight] || 0;
-    if (weightA !== weightB) {
-      return weightB - weightA;
-    }
-    return new Date(b.detected_at || 0).getTime() - new Date(a.detected_at || 0).getTime();
-  });
+  const sortedIncidents = useMemo(() => {
+    return [...incidents].sort((a, b) => {
+      const weightA = threatWeight[a.threat_level as keyof typeof threatWeight] || 0;
+      const weightB = threatWeight[b.threat_level as keyof typeof threatWeight] || 0;
+      if (weightA !== weightB) {
+        return weightB - weightA;
+      }
+      return new Date(b.detected_at || 0).getTime() - new Date(a.detected_at || 0).getTime();
+    });
+  }, [incidents]);
 
   return (
     <aside className="w-[380px] glass-panel border-l border-[#00e5ff]/30 flex flex-col shadow-[0_0_30px_rgba(0,0,0,0.8)] z-10 relative">
@@ -44,7 +46,7 @@ export default function IncidentFeed({ resetSignal }: { resetSignal?: number }) 
           <span>{isConnected ? 'UPLINK_OK' : 'CONNECTING...'}</span>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto hide-scrollbar p-4 flex flex-col gap-3">
+      <div className="incident-feed-scroll flex-1 overflow-y-auto hide-scrollbar p-4 flex flex-col gap-3">
         {sortedIncidents.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-cyan-700 gap-3 opacity-50">
             <Activity size={32} />
