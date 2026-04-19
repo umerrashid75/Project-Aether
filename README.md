@@ -12,12 +12,7 @@ UNCLASSIFIED // OSINT // FOR EDUCATIONAL USE ONLY
 
 ---
 
-## Screenshot
 
-![God's Eye Dashboard](docs/screenshot.png)
-*Live command center monitoring the English Channel — 23 vessels, 4 aircraft, 1 GNSS anomaly detected*
-
----
 
 ## Overview
 
