@@ -4,9 +4,9 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import SitrepCard from './SitrepCard';
 import { Activity, Wifi, WifiOff } from 'lucide-react';
 
-export default function IncidentFeed() {
+export default function IncidentFeed({ resetSignal }: { resetSignal?: number }) {
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000/ws/feed";
-  const { incidents, status } = useWebSocket(wsUrl);
+  const { incidents, status } = useWebSocket(wsUrl, resetSignal);
 
   const isConnected = status === 'open';
 

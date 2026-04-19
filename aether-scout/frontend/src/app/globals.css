@@ -160,3 +160,32 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
+
+@keyframes reticleSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes reticleSpinReverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes reticleSpin {
+    from { transform: none; }
+    to { transform: none; }
+  }
+
+  @keyframes reticleSpinReverse {
+    from { transform: none; }
+    to { transform: none; }
+  }
+}

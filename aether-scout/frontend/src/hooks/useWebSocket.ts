@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export function useWebSocket(url: string) {
+export function useWebSocket(url: string, resetSignal?: number) {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [status, setStatus] = useState<'connecting' | 'open' | 'closed'>('connecting');
   const ws = useRef<WebSocket | null>(null);
@@ -58,6 +58,10 @@ export function useWebSocket(url: string) {
       }
     };
   }, [connect]);
+
+  useEffect(() => {
+    setIncidents([]);
+  }, [resetSignal]);
 
   return { incidents, status };
 }

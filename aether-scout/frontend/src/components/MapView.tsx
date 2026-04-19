@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Map, { Marker, Popup } from 'react-map-gl';
+import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTelemetry } from '../hooks/useTelemetry';
 import { useEntitySelection } from '../contexts/EntitySelectionContext';
@@ -33,9 +34,10 @@ const VesselIcon = ({ color, isMoving, rotate }: { color: string, isMoving: bool
   </div>
 );
 
-export default function MapView() {
+export default function MapView({ onMapReady }: { onMapReady?: (map: MapRef) => void }) {
   const { aircraft, vessels } = useTelemetry();
   const { selectedEntityId, setSelectedEntityId, hoveredEntityId } = useEntitySelection();
+  const mapRef = React.useRef<MapRef | null>(null);
   
   const getColor = (level: string) => THREAT_COLORS[level as keyof typeof THREAT_COLORS] || THREAT_COLORS.LOW;
 
@@ -53,10 +55,16 @@ export default function MapView() {
   return (
     <div className="absolute inset-0 bg-slate-900 border-r border-[#00e5ff] overflow-hidden">
       <Map
+        ref={mapRef}
         initialViewState={{
           longitude: 1.5,
           latitude: 51.0,
           zoom: 8
+        }}
+        onLoad={() => {
+          if (mapRef.current && onMapReady) {
+            onMapReady(mapRef.current);
+          }
         }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
